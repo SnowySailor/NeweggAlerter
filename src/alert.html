@@ -1,0 +1,41 @@
+<html>
+    <body>
+        <a id="alert_link">Link</a>
+        <div id="timestamp"></div>
+        <script type="text/javascript">
+            var clickedTime = null;
+            function main() {
+                get_and_check();
+            }
+
+            function get_and_check() {
+                if (clickedTime !== null && ((new Date()).getTime() - clickedTime.getTime()) < 120000) {
+                    setTimeout(get_and_check, 120000);
+                    return;
+                }
+
+                try {
+                    var timestamp = document.getElementById("timestamp");
+                    timestamp.innerHTML = (new Date()).toString();
+                    var xmlHttp = new XMLHttpRequest();
+                    xmlHttp.open("GET", "http://" + window.location.host + "/link", false); 
+                    xmlHttp.send(null);
+                    if (xmlHttp.status == 200) {
+                        console.log('clicking');
+                        clickedTime = new Date();
+                        set_and_click(xmlHttp.responseText);
+                    }
+                } catch {}
+                setTimeout(get_and_check, 100);
+            }
+
+            function set_and_click(url) {
+                var alert_link = document.getElementById("alert_link");
+                alert_link.setAttribute('href', url);
+                alert_link.click();
+            }
+
+            main();
+        </script>
+    </body>
+</html>
